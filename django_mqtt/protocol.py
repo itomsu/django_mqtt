@@ -72,7 +72,7 @@ TOPIC_SEP = '/'
 TOPIC_BEGINNING_DOLLAR = '$'
 WILDCARD_SINGLE_LEVEL = '+'
 WILDCARD_MULTI_LEVEL = '#'
-MQTT_NONE_CHAR = '\x00\x00'
+MQTT_NONE_CHAR = b'\x00\x00'
 
 
 def remaining2list(remain, exception=False):
@@ -158,7 +158,7 @@ def get_string(buff, exception=False):
         str_size, = struct.unpack_from("!H", buff[:2])
         fmt = "!"+("B"*str_size)
         utf8_str = struct.unpack_from(fmt, buff, struct.calcsize("!H"))
-        byte_str = map(chr, utf8_str)
+        byte_str = list(map(chr, utf8_str))
         utf8_str = ''.join(byte_str).decode('utf8')
         if MQTT_NONE_CHAR in utf8_str:
             if exception:
@@ -191,7 +191,7 @@ def gen_string(uni_str, exception=False):
             utf8_str = utf8_str.replace(MQTT_NONE_CHAR, '')
         str_size = len(utf8_str)
         fmt = "!H"+("B"*str_size)
-        byte_str = map(ord, utf8_str)
+        byte_str = list(map(ord, utf8_str))
         return struct.pack(fmt, str_size, *byte_str)
     except UnicodeDecodeError as ex:
         if exception:
